@@ -34,7 +34,7 @@ Players.PlayerAdded:Connect(function(player)
 
         local key = "Player_" .. player.UserId
 
-        -- Load data (přejmenováno err na data)
+        -- Load data
         local success, data = pcall(function()
             return MoneyDataStore:GetAsync(key)
         end)
