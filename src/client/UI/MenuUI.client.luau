@@ -1,13 +1,14 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local StoreConfig = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("StoreConfig"))
+
 local Players = game:GetService("Players")
 local MarketplaceService = game:GetService("MarketplaceService")
 local TweenService = game:GetService("TweenService")
 
+
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
---ID of my images
-local ICON1_ID = "rbxassetid://105248160339790" --Robux Icon
-local ICON2_ID = "rbxassetid://128824638429848" --Cash Icon
 
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "RobuxStoreUI"
@@ -25,7 +26,7 @@ local function createOpenButton(parentGui)
     openButton.Size = baseSize
     openButton.Position = UDim2.new(0, 60, 0.5, 0)
     openButton.BackgroundColor3 = Color3.fromRGB(25, 110, 220)
-    openButton.Image = ICON1_ID
+    openButton.Image = StoreConfig.ICON1_ID
     openButton.ScaleType = Enum.ScaleType.Crop
     openButton.Parent = parentGui
 
@@ -178,7 +179,88 @@ local function createStoreLayout(parentFrame) --function that creates the top ta
           scrollPadding.PaddingRight = UDim.new(0, 16)
           scrollPadding.Parent = contentScroll
 
+          local itemLayout = Instance.new("UIGridLayout")
+          itemLayout.Parent = contentScroll
+          itemLayout.SortOrder = Enum.SortOrder.LayoutOrder
+          itemLayout.CellSize = UDim2.new(0, 165, 0, 190) -- Each item will be 165px wide and 190px tall
+          itemLayout.CellPadding = UDim2.new(0, 14, 0, 14) -- 14px space between each item
+          itemLayout.FillDirectionMaxCells = 3 -- Maximum of 3 items per row
+          itemLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+          itemLayout.Parent = contentScroll
+
           return tabButtons, contentScroll --returns the created tab buttons and the scrollable content area so they can be used outside this function
+end
+
+local function clearContent(scrollFrame) --function that removes all items from the scrollable content area
+    for _, child in ipairs(scrollFrame:GetChildren()) do
+        if child:IsA("Frame") then --only removes frames (the store items), not the layout or padding objects
+            child:Destroy()
+        end
+    end
+end
+
+local function createItemCard(itemData, parentScroll) --function that creates a single item card inside the scrollable content area
+    local itemCard = Instance.new("Frame")
+    itemCard.Name = "ItemCard"
+    itemCard.Size = UDim2.new(0, 165, 0, 190)
+    itemCard.BackgroundColor3 = Color3.fromRGB(32, 46, 74)
+    itemCard.Parent = parentScroll
+
+    local cardCorner = Instance.new("UICorner")
+    cardCorner.CornerRadius = UDim.new(0, 12)
+    cardCorner.Parent = itemCard
+
+    local cardStroke = Instance.new("UIStroke")
+    cardStroke.Color = Color3.fromRGB(90, 150, 240)
+    cardStroke.Thickness = 2
+    cardStroke.Parent = itemCard
+
+    local iconImage = Instance.new("ImageLabel")
+    iconImage.Name = "IconImage"
+    iconImage.Size = UDim2.new(0, 80, 0, 80)
+    iconImage.Position = UDim2.new(0.5, -40, 0, 10) -- Centered horizontally and positioned near the top
+    iconImage.BackgroundTransparency = 1
+    iconImage.Image = itemData.icon
+    iconImage.Parent = itemCard
+
+    local nameLabel = Instance.new("TextLabel")
+    nameLabel.Name = "NameLabel"
+    nameLabel.Size = UDim2.new(1, -16, 0, 28) -- Full width minus 16px margins, 28px tall
+    nameLabel.Position = UDim2.new(0, 8, 0, 96) -- Positioned below the icon
+    nameLabel.BackgroundTransparency = 1
+    nameLabel.Text = itemData.name
+    nameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    nameLabel.Font = Enum.Font.FredokaOne
+    nameLabel.TextSize = 16
+    nameLabel.TextWrapped = true -- Allows the text to wrap to the next line if it's too long
+    nameLabel.Parent = itemCard
+
+    local textButton = Instance.new("TextButton")
+    textButton.Name = "PurchaseButton"
+    textButton.Size = UDim2.new(1, -24, 0, 36) -- Full width minus 24px margins, 36px tall
+    textButton.Position = UDim2.new(0, 12, 1, -46) -- Positioned near the bottom of the card
+    textButton.BackgroundColor3 = Color3.fromRGB(45, 195, 95)
+    textButton.Text = itemData.price
+    textButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    textButton.Font = Enum.Font.FredokaOne
+    textButton.TextSize = 18
+    textButton.Parent = itemCard
+    
+    local btnCorner = Instance.new("UICorner")
+    btnCorner.CornerRadius = UDim.new(0, 8)
+    btnCorner.Parent = textButton
+    
+    textButton.MouseButton1Click:Connect(function()
+        if not itemData.itemId or itemData.itemId == 0 then
+          warn("ID of the product is missing:", itemData.name)
+          return
+        end
+        if itemData.itemType == "GamePass" then
+            MarketplaceService:PromptGamePassPurchase(player, itemData.itemId)
+        elseif itemData.itemType == "Product" then
+            MarketplaceService:PromptProductPurchase(player, itemData.itemId)
+        end
+    end)
 end
 
 -- Spuštění funkce a uložení vráceného tlačítka do proměnné
@@ -198,6 +280,14 @@ local function selectTab(selectedName)
             btn.BackgroundColor3 = Color3.fromRGB(32, 46, 74)
         end
     end
+    clearContent(contentScroll)
+    
+    local items = StoreConfig.STORE_ITEMS[selectedName]
+    if items then
+        for _, item in ipairs(items) do
+            createItemCard(item, contentScroll)
+        end
+    end
 end
 
 for name, btn in pairs(tabButtons) do
@@ -207,3 +297,4 @@ for name, btn in pairs(tabButtons) do
 end
 
 selectTab("Money") -- Set the default selected tab to "Money" when the store window is first opened
+
