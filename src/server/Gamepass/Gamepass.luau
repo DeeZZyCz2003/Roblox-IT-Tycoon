@@ -6,50 +6,66 @@ local StoreConfig = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChil
 
 local GamePassConfig = {}
 
-local function filterGamePasses()
-        for _, item in ipairs(StoreConfig.STORE_ITEMS["GamePasses"]) do
-            if item.name == "WalkSpeed" then
-            return item
-            end
-        end
-    return nil
+local function getGamePassById(passId: number)
+	for _, item in ipairs(StoreConfig.STORE_ITEMS["GamePasses"]) do
+		if item.itemId == passId then
+			return item
+		end
+	end
+	return nil
 end
 
-local walkSpeedPass = filterGamePasses()
+local function applyPassEffect(player: Player, character: Model, pass)
+	local humanoid = character:WaitForChild("Humanoid") :: Humanoid
 
-local function applyWalkSpeed(player: Player, character: Model)
-    local humanoid = character:WaitForChild("Humanoid") :: Humanoid
-    local passId = walkSpeedPass.itemId
-    
-    local success, hasPass = pcall(function()
-        return MarketplaceService:UserOwnsGamePassAsync(player.UserId, passId)
-    end)
+	-- Každý GamePass dostane efekt podle toho, co má nastavené v StoreConfig
+	if pass.newSpeed then
+		humanoid.WalkSpeed = pass.newSpeed
+	end
 
-    if success and hasPass then
-        humanoid.WalkSpeed = walkSpeedPass.newSpeed
-        end
+	if pass.jumpPower then
+		humanoid.UseJumpPower = true
+		humanoid.JumpPower = pass.jumpPower
+	end
+
+	-- Příklad pro budoucí pasivní bonus (třeba 2x peníze pro Economy/MoneyPad)
+	if pass.moneyMultiplier then
+		player:SetAttribute("MoneyMultiplier", pass.moneyMultiplier)
+	end
+end
+
+local function applyAllOwnedPasses(player: Player, character: Model)
+	for _, pass in ipairs(StoreConfig.STORE_ITEMS["GamePasses"]) do
+		local success, hasPass = pcall(function()
+			return MarketplaceService:UserOwnsGamePassAsync(player.UserId, pass.itemId)
+		end)
+
+		if success and hasPass then
+			applyPassEffect(player, character, pass)
+		end
+	end
 end
 
 function GamePassConfig.Start()
-    Players.PlayerAdded:Connect(function(player)
-    player.CharacterAdded:Connect(function(character)
-        applyWalkSpeed(player, character)
-    end)
-    if player.Character then
-        applyWalkSpeed(player, player.Character)
-    end
-end)
+	Players.PlayerAdded:Connect(function(player)
+		player.CharacterAdded:Connect(function(character)
+			applyAllOwnedPasses(player, character)
+		end)
+		if player.Character then
+			applyAllOwnedPasses(player, player.Character)
+		end
+	end)
 
-MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(player, passId, wasPurchased)
-    if wasPurchased and passId == walkSpeedPass.itemId then
-        if player.Character then
-                local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-                if humanoid then
-                    humanoid.WalkSpeed = walkSpeedPass.newSpeed
-                end
-            end
-        end
-    end)
+	MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(player, passId, wasPurchased)
+		if not wasPurchased then
+			return
+		end
+
+		local pass = getGamePassById(passId)
+		if pass and player.Character then
+			applyPassEffect(player, player.Character, pass)
+		end
+	end)
 end
 
 
