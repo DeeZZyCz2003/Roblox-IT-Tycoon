@@ -2,7 +2,7 @@ local moneyPad = {}
 
 local economyMath = require(script.Parent.Parent.Economy.Economy)
 
-function moneyPad.setupMoneyPad(pad)
+function moneyPad.setupMoneyPad(pad, playerOwner)
 	-- Initializes the pad and handles the physical interaction.
 	-- Uses a "debounce" boolean to prevent multiple triggers from physics engine.
 	local debounce = false
@@ -11,7 +11,7 @@ function moneyPad.setupMoneyPad(pad)
 	pad.Touched:Connect(function(hit)
 
 		local player = game.Players:GetPlayerFromCharacter(hit.Parent)
-		if player == nil then return end
+		if player ~= playerOwner then return end
 
 		-- If unlocked, proceed with collection and lock it immediately.
 		if debounce == false then

@@ -1,28 +1,32 @@
 local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local GamePassConfig = {
-    Passes = {
-        WalkSpeed = {
-            Name = "WalkSpeed",
-            GamePassId = 2099338821,
-            RobuxCost = 199,
-            Description = "Your walkspeed will be upgraded to 24 studs/s.",
-            newSpeed = 60,
-        }
-    }
-}
+local StoreConfig = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("StoreConfig"))
+
+local GamePassConfig = {}
+
+local function filterGamePasses()
+        for _, item in ipairs(StoreConfig.STORE_ITEMS["GamePasses"]) do
+            if item.name == "WalkSpeed" then
+            return item
+            end
+        end
+    return nil
+end
+
+local walkSpeedPass = filterGamePasses()
 
 local function applyWalkSpeed(player: Player, character: Model)
     local humanoid = character:WaitForChild("Humanoid") :: Humanoid
-    local passId = GamePassConfig.Passes.WalkSpeed.GamePassId
+    local passId = walkSpeedPass.itemId
     
     local success, hasPass = pcall(function()
         return MarketplaceService:UserOwnsGamePassAsync(player.UserId, passId)
     end)
 
     if success and hasPass then
-        humanoid.WalkSpeed = GamePassConfig.Passes.WalkSpeed.newSpeed
+        humanoid.WalkSpeed = walkSpeedPass.newSpeed
         end
 end
 
@@ -31,14 +35,17 @@ function GamePassConfig.Start()
     player.CharacterAdded:Connect(function(character)
         applyWalkSpeed(player, character)
     end)
+    if player.Character then
+        applyWalkSpeed(player, player.Character)
+    end
 end)
 
 MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(player, passId, wasPurchased)
-    if wasPurchased and passId == GamePassConfig.Passes.WalkSpeed.GamePassId then
+    if wasPurchased and passId == walkSpeedPass.itemId then
         if player.Character then
                 local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
                 if humanoid then
-                    humanoid.WalkSpeed = GamePassConfig.Passes.WalkSpeed.newSpeed
+                    humanoid.WalkSpeed = walkSpeedPass.newSpeed
                 end
             end
         end

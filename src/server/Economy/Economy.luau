@@ -6,8 +6,8 @@ function economy.generateMoney(incomeObject, storedMoney)
 	-- Runs an infinite loop on the background.
 	-- Every second, it adds the current income value to the pad's stored money.
 	while true do
-		task.wait(0.1)
-		storedMoney.Value += incomeObject.Value + 19
+		task.wait(1)
+		storedMoney.Value += incomeObject.Value
 		storedMoney.BillboardGui.TextLabel.Text = storedMoney.Value.."$"
 	end
 end

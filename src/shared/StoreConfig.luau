@@ -1,3 +1,4 @@
+
 local StoreConfig = {}
 
 --ID of my images
@@ -14,6 +15,7 @@ local CASH_75000_ID = "rbxassetid://73000862065684"
 local CASH_100000_ID = "rbxassetid://106402370322994"
 local CASH_200000_ID = "rbxassetid://93492255002222"
 local CASH_500000_ID = "rbxassetid://125313647746710"
+local WALKSPEED_ID = "rbxassetid://74101719805988"
 local STORE_ITEMS = {
     ["Money"] = {
         { name = "1,000 Cash",  price = "39 R$", icon = CASH_1000_ID, description = "Get 1,000 Cash to spend in the game!", itemId = 3736274514, itemType = "Product", rewardAmount = 1000 },
@@ -30,7 +32,7 @@ local STORE_ITEMS = {
         { name = "500,000 Cash", price = "699 R$", icon = CASH_500000_ID, description = "Get 500,000 Cash to spend in the game!", itemId = 3736484461, itemType = "Product", rewardAmount = 500000 },
     },
     ["GamePasses"] = {
-            --TODO (itemType = "GamePass")
+        { name = "WalkSpeed", price = "199 R$", icon = WALKSPEED_ID, description = "Your walkspeed will be upgraded to 24 studs/s.", itemId = 2099338821, itemType = "GamePass", newSpeed = 24},
     },
     ["Special Orders"] = {
             --TODO
@@ -51,6 +53,7 @@ StoreConfig.CASH_75000_ID = CASH_75000_ID
 StoreConfig.CASH_100000_ID = CASH_100000_ID
 StoreConfig.CASH_200000_ID = CASH_200000_ID
 StoreConfig.CASH_500000_ID = CASH_500000_ID
+StoreConfig.WALKSPEED_ID = WALKSPEED_ID
 
 
 

@@ -198,6 +198,8 @@ local function clearContent(scrollFrame) --function that removes all items from 
     end
 end
 
+local ownedPasses = {}
+local currentTab = "Money"
 local function createItemCard(itemData, parentScroll) --function that creates a single item card inside the scrollable content area
     local itemCard = Instance.new("Frame")
     itemCard.Name = "ItemCard"
@@ -253,8 +255,32 @@ local function createItemCard(itemData, parentScroll) --function that creates a 
     local btnCorner = Instance.new("UICorner")
     btnCorner.CornerRadius = UDim.new(0, 8)
     btnCorner.Parent = textButton
+
+    local isOwned = false
+
+local function setOwned()
+    isOwned = true
+    textButton.Text = "Owned"
+    textButton.BackgroundColor3 = Color3.fromRGB(120, 120, 120)
+end
+
+    if itemData.itemType == "GamePass" then
+        if ownedPasses[itemData.itemId] then
+            setOwned()
+        else
+            task.spawn(function() 
+                local success, hasPass = pcall(function() return MarketplaceService:UserOwnsGamePassAsync(player.UserId, itemData.itemId) end)
+                if success and hasPass then
+                    ownedPasses[itemData.itemId] = true
+                if textButton.Parent then setOwned()
+                end
+            end
+        end)
+    end
+end
     
     textButton.MouseButton1Click:Connect(function()
+        if isOwned then return end
         if not itemData.itemId or itemData.itemId == 0 then
           warn("ID of the product is missing:", itemData.name)
           return
@@ -277,6 +303,7 @@ robuxButton.MouseButton1Click:Connect(function()
 end)
 
 local function selectTab(selectedName)
+    currentTab = selectedName
     for name, btn in pairs(tabButtons) do
         if name == selectedName then
             btn.BackgroundColor3 = Color3.fromRGB(50, 130, 240)
@@ -301,6 +328,14 @@ for name, btn in pairs(tabButtons) do
 end
 
 selectTab("Money") -- Set the default selected tab to "Money" when the store window is first opened
+MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(purchasingPlayer, passId, wasPurchased)
+    if purchasingPlayer == player and wasPurchased then
+        ownedPasses[passId] = true
+        if currentTab == "GamePasses" then
+            selectTab("GamePasses")
+        end
+    end
+end)
 
 --TESTING NA BAKALARKU
 --[[

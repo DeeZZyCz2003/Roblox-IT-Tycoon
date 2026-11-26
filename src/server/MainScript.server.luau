@@ -16,13 +16,13 @@ dataStores.Start()
 gamepassModule.Start()
 storeServer.Start()
 baseplateSetup.setup(baseplate)
-moneyPadModule.setupMoneyPad(pad)
 baseColorModule.setupColors()
 
 buttonsFolder.Parent = ServerStorage
 
 -- Function will start if player claims the OwnerDoor
 tycoonModule.init(function(player)
+	moneyPadModule.setupMoneyPad(pad, player)
 	buttonsFolder.Parent = workspace.Tycoon
 	tycoonSystem.start(player, pad)
 end)

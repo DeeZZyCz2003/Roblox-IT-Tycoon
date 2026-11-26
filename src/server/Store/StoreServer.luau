@@ -1,6 +1,6 @@
-local Players = game:getService("Players")
-local MarketplaceService = game:getService("MarketplaceService")
-local ReplicatedStorage = game:getService("ReplicatedStorage")
+local Players = game:GetService("Players")
+local MarketplaceService = game:GetService("MarketplaceService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local StoreConfig = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("StoreConfig"))
 
