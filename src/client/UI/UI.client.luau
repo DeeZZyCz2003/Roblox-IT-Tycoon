@@ -34,3 +34,13 @@ updateUI()
 
 -- Automaticky zavoláme pokaždé, když se hodnota peněz změní
 money.Changed:Connect(updateUI)
+
+--TESTING NA BAKALARKU
+--[[
+print("[MainUI] HUD peněz inicializován pro hráče:", player.Name)
+print(" -> Počáteční hodnota Money:", money.Value, "| Zobrazený text:", moneyLabel.Text)
+
+money.Changed:Connect(function(newValue)
+	print("[MainUI] Změna peněz detekována | Nová hodnota:", newValue, "| Text v UI:", moneyLabel.Text)
+end)
+--]]

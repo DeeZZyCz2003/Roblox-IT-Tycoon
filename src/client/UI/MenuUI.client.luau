@@ -298,3 +298,27 @@ end
 
 selectTab("Money") -- Set the default selected tab to "Money" when the store window is first opened
 
+--TESTING NA BAKALARKU
+--[[
+print("=========================================")
+print("[MenuUI] Klientský obchod inicializován pro hráče:", player.Name)
+print(" -> ScreenGui:", screenGui:GetFullName())
+print(" -> OpenButton:", robuxButton ~= nil)
+print(" -> StoreWindow:", storeWindow ~= nil, "| Výchozí Visible:", storeWindow.Visible)
+
+local tabCount = 0
+for tabName, btn in pairs(tabButtons) do
+	tabCount += 1
+	btn.MouseButton1Click:Connect(function()
+		local items = StoreConfig.STORE_ITEMS[tabName]
+		local itemCount = items and #items or 0
+		print("[MenuUI] Přepnuta záložka na:", tabName, "| Počet vykreslených položek:", itemCount)
+	end)
+end
+print(" -> Počet záložek:", tabCount)
+
+robuxButton.MouseButton1Click:Connect(function()
+	print("[MenuUI] Klik na RobuxStoreButton | StoreWindow.Visible:", storeWindow.Visible)
+end)
+print("=========================================")
+--]]
