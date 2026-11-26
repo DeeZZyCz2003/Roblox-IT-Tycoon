@@ -319,4 +319,16 @@ local upgradesData = {
 	--next upgrades
 }
 
+
+--TESTING NA BAKALARKU
+--[[
+local totalItems = 0
+for itemName, data in pairs(upgradesData) do
+	assert(type(data.BasePrice) == "number" and data.BasePrice >= 0, "[Upgrades] Neplatná BasePrice u: " .. itemName)
+	totalItems += 1
+end
+print("[Upgrades] Validace dat proběhla úspěšně | Počet položek:", totalItems)
+--]]
+
+
 return upgradesData -- Vracíme rovnou naši datovou tabulku

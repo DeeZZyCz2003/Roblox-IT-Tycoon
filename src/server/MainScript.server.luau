@@ -26,3 +26,16 @@ tycoonModule.init(function(player)
 	buttonsFolder.Parent = workspace.Tycoon
 	tycoonSystem.start(player, pad)
 end)
+
+--TESTING NA BAKALARKU
+--[[
+print("=========================================")
+print("[MainScript] Start serverové inicializace...")
+print(" -> Baseplate:", baseplate ~= nil)
+print(" -> MoneyPad:", pad ~= nil)
+print(" -> ButtonsFolder:", buttonsFolder ~= nil, "| Počet tlačítek:", #buttonsFolder:GetChildren())
+print("[MainScript] Všechny moduly úspěšně načteny a spuštěny.")
+print("=========================================")
+--]]
+
+

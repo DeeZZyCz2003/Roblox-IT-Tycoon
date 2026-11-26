@@ -48,8 +48,9 @@ function StoreServer.Start()
     end
 end
 
-
---[[function StoreServer.Start()
+--TESTING NA BAKALARKU
+--[[
+function StoreServer.Start()
 	print("[StoreServer] Inicializace ProcessReceipt...")
 
 	MarketplaceService.ProcessReceipt = function(receiptInfo)
@@ -59,7 +60,6 @@ end
 		print(" -> ProductId:", receiptInfo.ProductId)
 		print(" -> PurchaseId:", receiptInfo.PurchaseId)
 
-		-- Krok 1: Hráč
 		local player = Players:GetPlayerByUserId(receiptInfo.PlayerId)
 		if not player then
 			warn("[StoreServer] CHYBA: Hráč není na serveru.")
@@ -67,7 +67,6 @@ end
 		end
 		print("[StoreServer] 2. Hráč nalezen:", player.Name)
 
-		-- Krok 2: Produkt ve StoreConfig
 		local item = findItemById(receiptInfo.ProductId)
 		if not item then
 			warn("[StoreServer] CHYBA: Neznámé ProductId:", receiptInfo.ProductId)
@@ -75,16 +74,14 @@ end
 		end
 		print("[StoreServer] 3. Produkt nalezen:", item.name, "| Odměna:", item.rewardAmount)
 
-		-- Krok 3: Peníze hráče
 		local leaderstats = player:FindFirstChild("leaderstats")
-		local playerMoney = leaderstats and leaderstats:FindFirstChild("Cash") -- uprav, pokud se jmenuje jinak
+		local playerMoney = leaderstats and leaderstats:FindFirstChild("Money")
 
 		if not playerMoney then
-			warn("[StoreServer] CHYBA: Chybí leaderstats nebo Cash u hráče:", player.Name)
+			warn("[StoreServer] CHYBA: Chybí leaderstats nebo Money u hráče:", player.Name)
 			return Enum.ProductPurchaseDecision.NotProcessedYet
 		end
 
-		-- Krok 4: Připsání odměny
 		if item.rewardAmount then
 			local oldBalance = playerMoney.Value
 			playerMoney.Value += item.rewardAmount
@@ -96,5 +93,6 @@ end
 
 		return Enum.ProductPurchaseDecision.NotProcessedYet
 	end
-end--]]
+end
+--]]
 return StoreServer

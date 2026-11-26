@@ -105,4 +105,74 @@ for pcName, pcData in pairs(upgradesData) do
 	)
 end
 
+
+--TESTING NA BAKALARKU
+--[[
+function stuffToBuy:SetupButton(buttonPart, playerMoney)
+	print("[StuffToBuy] Nastavuji tlačítko:", self.Name, "| Cena:", self.Price, "| Příjem:", self.Income)
+	local isPurchasing = false
+
+	local billboard = Instance.new("BillboardGui")
+	billboard.Size = UDim2.new(4, 0, 1.5, 0)
+	billboard.StudsOffset = Vector3.new(0, 2, 0)
+	billboard.Parent = buttonPart
+
+	local textLabel = Instance.new("TextLabel")
+	textLabel.Size = UDim2.new(1, 0, 1, 0)
+	textLabel.BackgroundTransparency = 1
+	textLabel.TextScaled = true
+	textLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
+	textLabel.Font = Enum.Font.FredokaOne
+	textLabel.Text = self.Name .. " - $" .. self.Price
+	textLabel.Parent = billboard
+
+	local function updateColor()
+		if not playerMoney then
+			warn("[StuffToBuy] CHYBA: Tlačítko " .. self.Name .. " nezná peníze hráče!")
+			return
+		end
+		buttonPart.Color = (playerMoney.Value >= self.Price)
+			and Color3.fromRGB(0, 255, 0)
+			or Color3.fromRGB(255, 0, 0)
+	end
+
+	updateColor()
+	local colorConnection = playerMoney and playerMoney:GetPropertyChangedSignal("Value"):Connect(updateColor)
+
+	buttonPart.Touched:Connect(function(hit)
+		if isPurchasing then return end
+		local player = game.Players:GetPlayerFromCharacter(hit.Parent)
+
+		if player and player.leaderstats.Money == playerMoney then
+			if playerMoney.Value >= self.Price then
+				isPurchasing = true
+				local oldBalance = playerMoney.Value
+				playerMoney.Value -= self.Price
+				print("[StuffToBuy] NÁKUP:", self.Name, "| Zůstatek:", oldBalance, "->", playerMoney.Value)
+
+				local modelInStorage = ServerStorage:FindFirstChild(self.Name)
+				if modelInStorage then
+					modelInStorage:Clone().Parent = workspace.Tycoon.FirstFloor
+					print("[StuffToBuy] Model zhmotněn:", self.Name)
+				else
+					warn("[StuffToBuy] CHYBA: Model " .. self.Name .. " chybí v ServerStorage!")
+				end
+
+				local incomeValue = workspace.Tycoon.FirstFloor.MoneyPad:FindFirstChild("Income")
+				if incomeValue then
+					incomeValue.Value += self.Income
+					print("[StuffToBuy] Příjem zvýšen na:", incomeValue.Value)
+				end
+
+				if colorConnection then colorConnection:Disconnect() end
+				buttonPart:Destroy()
+			else
+				print("[StuffToBuy] Nedostatek peněz na", self.Name, "(Potřeba:", self.Price, "| Má:", playerMoney.Value .. ")")
+			end
+		end
+	end)
+end
+--]]
+
+
 return allUpgrades

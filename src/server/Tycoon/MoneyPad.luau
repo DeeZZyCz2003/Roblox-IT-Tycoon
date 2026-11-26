@@ -31,4 +31,35 @@ function moneyPad.setupMoneyPad(pad)
 	end)
 end
 
+
+--TESTING NA BAKALARKU
+--[[
+function moneyPad.setupMoneyPad(pad)
+	print("[MoneyPad] Inicializuji MoneyPad:", pad:GetFullName())
+	local debounce = false
+	pad.Color = Color3.fromRGB(0, 150, 0)
+
+	pad.Touched:Connect(function(hit)
+		local player = game.Players:GetPlayerFromCharacter(hit.Parent)
+		if player == nil then return end
+
+		if debounce == false then
+			debounce = true
+			pad.Color = Color3.fromRGB(255, 0, 0)
+			print("[MoneyPad] Hráč", player.Name, "stoupl na pad -> vybírám", pad.StoredMoney.Value .. "$")
+
+			economyMath.collectMoney(pad.StoredMoney, player.leaderstats.Money)
+			pad["Coin Collect - SFX"]:Play()
+			pad.ParticleEmitter:Emit(15)
+
+			task.wait(1)
+			debounce = false
+			pad.Color = Color3.fromRGB(0, 150, 0)
+			print("[MoneyPad] Cooldown dokončen, pad je znovu připraven.")
+		end
+	end)
+end
+--]]
+
+
 return moneyPad

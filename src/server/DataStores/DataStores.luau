@@ -69,4 +69,76 @@ Players.PlayerAdded:Connect(function(player)
     end)
 end
 
+
+--TESTING NA BAKALARKU
+--[[
+function DataStores.Start()
+	print("[DataStores] Služba DataStores spuštěna.")
+
+	Players.PlayerAdded:Connect(function(player)
+		print("[DataStores] Hráč se připojil:", player.Name, "| UserId:", player.UserId)
+		local leaderstats = Instance.new("Folder")
+		leaderstats.Name = "leaderstats"
+		leaderstats.Parent = player
+
+		local money = Instance.new("IntValue")
+		money.Name = "Money"
+		money.Value = 0
+		money.Parent = leaderstats
+
+		local gems = Instance.new("IntValue")
+		gems.Name = "Gems"
+		gems.Value = 0
+		gems.Parent = leaderstats
+
+		local kills = Instance.new("IntValue")
+		kills.Name = "Kills"
+		kills.Value = 0
+		kills.Parent = leaderstats
+
+		local rebirths = Instance.new("IntValue")
+		rebirths.Name = "Rebirths"
+		rebirths.Value = 0
+		rebirths.Parent = leaderstats
+
+		local key = "Player_" .. player.UserId
+		local success, data = pcall(function()
+			return MoneyDataStore:GetAsync(key)
+		end)
+
+		if success then
+			if data ~= nil then
+				money.Value = data
+				print("[DataStores] Načteno pro", player.Name, "| Peníze:", data)
+			else
+				print("[DataStores] Nový hráč (žádná uložená data):", player.Name)
+			end
+		else
+			warn("[DataStores] CHYBA načítání pro " .. player.Name .. ": " .. tostring(data))
+		end
+	end)
+
+	Players.PlayerRemoving:Connect(function(player)
+		local key = "Player_" .. player.UserId
+		local leaderstats = player:FindFirstChild("leaderstats")
+
+		if leaderstats and leaderstats:FindFirstChild("Money") then
+			local money = leaderstats.Money
+			local success, errorMessage = pcall(function()
+				MoneyDataStore:SetAsync(key, money.Value)
+			end)
+
+			if success then
+				print("[DataStores] Úspěšně uloženo pro", player.Name, "| Částka:", money.Value)
+			else
+				warn("[DataStores] CHYBA ukládání pro " .. player.Name .. ": " .. tostring(errorMessage))
+			end
+		else
+			warn("[DataStores] CHYBA: Nelze uložit, chybí leaderstats/Money pro", player.Name)
+		end
+	end)
+end
+--]]
+
+
 return DataStores

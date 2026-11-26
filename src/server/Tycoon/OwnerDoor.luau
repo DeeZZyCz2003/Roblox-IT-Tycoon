@@ -47,4 +47,48 @@ function tycoon.init(onTycoonClaimedCallback)
 	tycoon.claimOwnerDoor(doorPart, onTycoonClaimedCallback)
 end
 
+
+--TESTING NA BAKALARKU
+--[[
+function tycoon.claimOwnerDoor(door, onTycoonClaimedCallback)
+	print("[OwnerDoor] Připravuji dveře:", door:GetFullName())
+	local ownerPlayer = nil
+
+	local surfaceGui = Instance.new("SurfaceGui")
+	surfaceGui.Face = Enum.NormalId.Front
+	surfaceGui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+	surfaceGui.PixelsPerStud = 50
+	surfaceGui.Parent = door
+
+	local textLabel = Instance.new("TextLabel")
+	textLabel.Size = UDim2.new(1, 0, 1, 0)
+	textLabel.BackgroundTransparency = 1
+	textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+	textLabel.TextScaled = true
+	textLabel.Font = Enum.Font.SourceSansBold
+	textLabel.Text = "Claim Tycoon"
+	textLabel.Parent = surfaceGui
+
+	door.Touched:Connect(function(hit)
+		local player = game.Players:GetPlayerFromCharacter(hit.Parent)
+		if not player then return end
+
+		if ownerPlayer == nil then
+			ownerPlayer = player
+			textLabel.Text = ownerPlayer.Name .. "’s Tycoon"
+			door.Transparency = 0.7
+			textLabel.TextTransparency = 0.5
+			door.CanCollide = false
+			print("[OwnerDoor] Tycoon zabrán hráčem:", ownerPlayer.Name)
+
+			if onTycoonClaimedCallback then
+				print("[OwnerDoor] Spouštím callback pro inicializaci Tycoonu...")
+				onTycoonClaimedCallback(ownerPlayer)
+			end
+		end
+	end)
+end
+--]]
+
+
 return tycoon

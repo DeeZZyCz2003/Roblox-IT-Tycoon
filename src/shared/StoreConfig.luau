@@ -21,4 +21,20 @@ StoreConfig.STORE_ITEMS = STORE_ITEMS
 StoreConfig.ICON1_ID = ICON1_ID
 StoreConfig.ICON2_ID = ICON2_ID
 
+
+--TESTING NA BAKALARKU
+--[[
+local totalStoreItems = 0
+for category, items in pairs(STORE_ITEMS) do
+	for _, item in ipairs(items) do
+		assert(item.name ~= nil, "[StoreConfig] Chybí name v kategorii: " .. category)
+		assert(type(item.itemId) == "number" and item.itemId > 0, "[StoreConfig] Neplatné itemId u: " .. tostring(item.name))
+		assert(item.itemType == "Product" or item.itemType == "GamePass", "[StoreConfig] Neplatný itemType u: " .. tostring(item.name))
+		totalStoreItems += 1
+	end
+end
+print("[StoreConfig] Validace obchodu OK | Ověřeno položek:", totalStoreItems)
+--]]
+
+
 return StoreConfig
