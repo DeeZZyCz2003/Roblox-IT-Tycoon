@@ -72,7 +72,6 @@ local function createOpenButton(parentGui)
 	return openButton --returns the created button so it can be used outside this function
 end
 
-
 local function createStoreWindow(parentGui) --function that creates the main semi-transparent store window and returns it
     local mainFrame = Instance.new("Frame") --main background container for the store
     mainFrame.Name = "StoreWindow"
@@ -215,13 +214,18 @@ local function createItemCard(itemData, parentScroll) --function that creates a 
     cardStroke.Thickness = 2
     cardStroke.Parent = itemCard
 
-    local iconImage = Instance.new("ImageLabel")
-    iconImage.Name = "IconImage"
-    iconImage.Size = UDim2.new(0, 80, 0, 80)
-    iconImage.Position = UDim2.new(0.5, -40, 0, 10) -- Centered horizontally and positioned near the top
-    iconImage.BackgroundTransparency = 1
-    iconImage.Image = itemData.icon
-    iconImage.Parent = itemCard
+    local icon = Instance.new("ImageLabel")
+    icon.Name = "IconImage"
+    icon.Size = UDim2.new(0, 80, 0, 80)
+    icon.Position = UDim2.new(0.5, -40, 0, 10) -- Centered horizontally and positioned near the top
+    icon.BackgroundTransparency = 1
+    icon.Image = itemData.icon
+    icon.ScaleType = Enum.ScaleType.Crop
+    icon.Parent = itemCard
+    
+    local iconUICorner = Instance.new("UICorner")
+    iconUICorner.CornerRadius = UDim.new(0, 10)
+    iconUICorner.Parent = icon
 
     local nameLabel = Instance.new("TextLabel")
     nameLabel.Name = "NameLabel"
