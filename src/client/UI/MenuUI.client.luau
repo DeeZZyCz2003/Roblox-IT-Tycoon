@@ -326,6 +326,9 @@ local function createItemCard(itemData, parentScroll) --function that creates a 
 		if isOwned then
 			return
 		end
+		if isSpecialOffer and isSpecialOfferAvailable() == false then
+			return
+		end
 		if not itemData.itemId or itemData.itemId == 0 then
 			warn("ID of the product is missing:", itemData.name)
 			return
