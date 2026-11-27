@@ -3,49 +3,84 @@ local MarketplaceService = game:GetService("MarketplaceService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local StoreConfig = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("StoreConfig"))
+local DataStore = require(script.Parent.Parent.DataStores.DataStores)
 
 local StoreServer = {}
 
 local function findItemById(productId)
-        for _, categoryItems in pairs(StoreConfig.STORE_ITEMS) do
-            for _, item in ipairs(categoryItems) do
-                if item.itemId == productId then
-                    return item
-                end
-            end
-        end
-    return nil
+	for _, categoryItems in pairs(StoreConfig.STORE_ITEMS) do
+		for _, item in ipairs(categoryItems) do
+			if item.itemId == productId then
+				return item
+			end
+		end
+	end
+	return nil
 end
 
 function StoreServer.Start()
-    MarketplaceService.ProcessReceipt = function(receiptInfo)
-        local player = Players:GetPlayerByUserId(receiptInfo.PlayerId)
-        if not player then
-            return Enum.ProductPurchaseDecision.NotProcessedYet
-        end
+	MarketplaceService.ProcessReceipt = function(receiptInfo)
+		local player = Players:GetPlayerByUserId(receiptInfo.PlayerId)
+		if not player then
+			return Enum.ProductPurchaseDecision.NotProcessedYet
+		end
 
-        local item = findItemById(receiptInfo.ProductId)
-        if not item then
-            warn("Unknown ProductId:", receiptInfo.ProductId)
-            return Enum.ProductPurchaseDecision.NotProcessedYet
-        end
+		if player:GetAttribute("DataLoaded") ~= true then
+			return Enum.ProductPurchaseDecision.NotProcessedYet
+		end
 
-        local leaderstats = player:FindFirstChild("leaderstats")
-        local playerMoney = leaderstats and leaderstats:FindFirstChild("Money")
+		local item = findItemById(receiptInfo.ProductId)
+		if not item then
+			warn("Unknown ProductId:", receiptInfo.ProductId)
+			return Enum.ProductPurchaseDecision.NotProcessedYet
+		end
 
-        if not playerMoney then
-            warn("Player does not have loaded leaderstats / money:", player.Name)
-            return Enum.ProductPurchaseDecision.NotProcessedYet
-        end
+		local leaderstats = player:FindFirstChild("leaderstats")
+		local playerMoney = leaderstats and leaderstats:FindFirstChild("Money")
+		local playerGems = leaderstats and leaderstats:FindFirstChild("Gems")
+		local specialOffer = StoreConfig.SPECIAL_OFFER
 
-        if item.rewardAmount then
-            playerMoney.Value += item.rewardAmount
-            print(player.Name .. " bought " .. item.name .. " (+" .. item.rewardAmount .. ")")
-            return Enum.ProductPurchaseDecision.PurchaseGranted
-        end
+		if not playerMoney then
+			warn("Player does not have loaded leaderstats / money:", player.Name)
+			return Enum.ProductPurchaseDecision.NotProcessedYet
+		end
 
-        return Enum.ProductPurchaseDecision.NotProcessedYet
-    end
+		if not playerGems then
+			warn("Player does not have loaded leaderstats / gems:", player.Name)
+			return Enum.ProductPurchaseDecision.NotProcessedYet
+		end
+
+		if specialOffer and item.itemId == specialOffer.itemId then
+			if player:GetAttribute("SpecialOfferBought") == true then
+				warn("Player already bought SpecialOffer:", player.Name)
+				return Enum.ProductPurchaseDecision.NotProcessedYet
+			end
+			playerMoney.Value += item.rewardMoney
+			playerGems.Value += item.rewardGems
+			player:SetAttribute("SpecialOfferBought", true)
+			DataStore.SavePlayerData(player)
+			print(
+				player.Name
+					.. " bought "
+					.. item.name
+					.. " (+"
+					.. item.rewardMoney
+					.. " Cash, +"
+					.. item.rewardGems
+					.. " Gems)"
+			)
+			return Enum.ProductPurchaseDecision.PurchaseGranted
+		end
+
+		if item.rewardAmount then
+			playerMoney.Value += item.rewardAmount
+			print(player.Name .. " bought " .. item.name .. " (+" .. item.rewardAmount .. ")")
+			DataStore.SavePlayerData(player)
+			return Enum.ProductPurchaseDecision.PurchaseGranted
+		end
+
+		return Enum.ProductPurchaseDecision.NotProcessedYet
+	end
 end
 
 --TESTING NA BAKALARKU

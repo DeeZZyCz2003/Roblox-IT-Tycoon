@@ -23,7 +23,6 @@ function tycoonSystem.start(player, pad)
 	end
 end
 
-
 --TESTING NA BAKALARKU
 --[[
 function tycoonSystem.start(player, pad)
@@ -48,6 +47,5 @@ function tycoonSystem.start(player, pad)
 	print("[StartTycoonSystem] Inicializováno tlačítek:", okCount, "| Chybějících:", missingCount)
 end
 --]]
-
 
 return tycoonSystem

@@ -29,7 +29,7 @@ function stuffToBuy:SetupButton(buttonPart, playerMoney)
 	textLabel.Size = UDim2.new(1, 0, 1, 0)
 	textLabel.BackgroundTransparency = 1 -- Průhledné pozadí
 	textLabel.TextScaled = true
-	textLabel.TextColor3 = Color3.fromRGB(0,0,0) -- Černý text
+	textLabel.TextColor3 = Color3.fromRGB(0, 0, 0) -- Černý text
 	textLabel.Font = Enum.Font.FredokaOne
 	textLabel.Text = self.Name .. " - $" .. self.Price -- Vypíše např: "RightWall - $50"
 	textLabel.Parent = billboard
@@ -60,7 +60,9 @@ function stuffToBuy:SetupButton(buttonPart, playerMoney)
 
 	-- 4. LOGIKA NÁKUPU
 	buttonPart.Touched:Connect(function(hit)
-		if isPurchasing then return end
+		if isPurchasing then
+			return
+		end
 
 		local character = hit.Parent
 		local player = game.Players:GetPlayerFromCharacter(character)
@@ -87,8 +89,10 @@ function stuffToBuy:SetupButton(buttonPart, playerMoney)
 				end
 
 				-- Úklid tlačítka
-				if colorConnection then colorConnection:Disconnect() end
-				buttonPart:Destroy() 
+				if colorConnection then
+					colorConnection:Disconnect()
+				end
+				buttonPart:Destroy()
 			end
 		end
 	end)
@@ -97,14 +101,8 @@ end
 local allUpgrades = {}
 
 for pcName, pcData in pairs(upgradesData) do
-	allUpgrades[pcName] = stuffToBuy.new(
-		pcName,
-		pcData.BasePrice,
-		pcData.BaseIncome,
-		pcData.Components
-	)
+	allUpgrades[pcName] = stuffToBuy.new(pcName, pcData.BasePrice, pcData.BaseIncome, pcData.Components)
 end
-
 
 --TESTING NA BAKALARKU
 --[[
@@ -173,6 +171,5 @@ function stuffToBuy:SetupButton(buttonPart, playerMoney)
 	end)
 end
 --]]
-
 
 return allUpgrades

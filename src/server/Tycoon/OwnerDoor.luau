@@ -2,7 +2,7 @@ local tycoon = {}
 
 function tycoon.claimOwnerDoor(door, onTycoonClaimedCallback)
 	local ownerPlayer = nil
-	
+
 	-- Vytvoření UI s textem přímo na kostce
 	local surfaceGui = Instance.new("SurfaceGui")
 	surfaceGui.Face = Enum.NormalId.Front
@@ -13,7 +13,7 @@ function tycoon.claimOwnerDoor(door, onTycoonClaimedCallback)
 	local textLabel = Instance.new("TextLabel")
 	textLabel.Size = UDim2.new(1, 0, 1, 0)
 	textLabel.BackgroundTransparency = 1
-	textLabel.TextColor3 = Color3.fromRGB(255,255,255)
+	textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 	textLabel.TextScaled = true
 	textLabel.Font = Enum.Font.SourceSansBold
 	textLabel.Text = "Claim Tycoon"
@@ -24,16 +24,18 @@ function tycoon.claimOwnerDoor(door, onTycoonClaimedCallback)
 	-- Funkce pro otevření (zneviditelnění) dveří
 	door.Touched:Connect(function(hit)
 		local player = game.Players:GetPlayerFromCharacter(hit.Parent)
-		if not player then return end
-		
+		if not player then
+			return
+		end
+
 		if ownerPlayer == nil then
 			ownerPlayer = player
 			textLabel.Text = ownerPlayer.Name .. "’s Tycoon"
-			
+
 			door.Transparency = 0.7
 			textLabel.TextTransparency = 0.5
 			door.CanCollide = false
-			
+
 			if onTycoonClaimedCallback then
 				onTycoonClaimedCallback(ownerPlayer)
 			end
@@ -46,7 +48,6 @@ function tycoon.init(onTycoonClaimedCallback)
 	local doorPart = workspace.Tycoon.FirstFloor:WaitForChild("OwnerDoor")
 	tycoon.claimOwnerDoor(doorPart, onTycoonClaimedCallback)
 end
-
 
 --TESTING NA BAKALARKU
 --[[
@@ -89,6 +90,5 @@ function tycoon.claimOwnerDoor(door, onTycoonClaimedCallback)
 	end)
 end
 --]]
-
 
 return tycoon

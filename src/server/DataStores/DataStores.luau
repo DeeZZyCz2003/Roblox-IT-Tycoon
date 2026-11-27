@@ -6,7 +6,6 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local StoreConfig = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("StoreConfig"))
 
-
 local function savePlayerData(player)
 	if not player:GetAttribute("DataLoaded") then
 		return
@@ -25,61 +24,64 @@ local function savePlayerData(player)
 		return
 	end
 
-	local key= "Player_" .. player.UserId
+	local key = "Player_" .. player.UserId
 	local dataToSave = {
-		Money = money.Value, Gems = gems.Value, Kills = kills.Value, Rebirths = rebirths.Value, FirstJoinTime = player:GetAttribute("SpecialOfferFirstJoin") or os.time(), SpecialOfferBought = player:GetAttribute("SpecialOfferBought") == true
+		Money = money.Value,
+		Gems = gems.Value,
+		Kills = kills.Value,
+		Rebirths = rebirths.Value,
+		FirstJoinTime = player:GetAttribute("SpecialOfferFirstJoin") or os.time(),
+		SpecialOfferBought = player:GetAttribute("SpecialOfferBought") == true,
 	}
 
 	local success, errorMessage = pcall(function()
-        MoneyDataStore:SetAsync(key, dataToSave)
-    end)
+		MoneyDataStore:SetAsync(key, dataToSave)
+	end)
 
-    if not success then
-        warn("Failed to save data for " .. player.Name .. ": " .. tostring(errorMessage))
-    end
+	if not success then
+		warn("Failed to save data for " .. player.Name .. ": " .. tostring(errorMessage))
+	end
 end
 
-
 function DataStores.Start()
-    -- Run when player joins
-Players.PlayerAdded:Connect(function(player)
-	local leaderstats = Instance.new("Folder")
-	leaderstats.Name = "leaderstats"
-	leaderstats.Parent = player
-	
-	local money = Instance.new("IntValue")
-	money.Name = "Money"
-	money.Value = 0
-	money.Parent = leaderstats
-	
-	local gems = Instance.new("IntValue")
-	gems.Name = "Gems"
-	gems.Value = 0
-	gems.Parent = leaderstats
-	
-	local kills = Instance.new("IntValue")
-	kills.Name = "Kills"
-	kills.Value = 0
-	kills.Parent = leaderstats
-	
-	local rebirth = Instance.new("IntValue")
-	rebirth.Name = "Rebirths"
-	rebirth.Value = 0
-	rebirth.Parent = leaderstats
+	-- Run when player joins
+	Players.PlayerAdded:Connect(function(player)
+		local leaderstats = Instance.new("Folder")
+		leaderstats.Name = "leaderstats"
+		leaderstats.Parent = player
 
+		local money = Instance.new("IntValue")
+		money.Name = "Money"
+		money.Value = 0
+		money.Parent = leaderstats
 
-        local key = "Player_" .. player.UserId
+		local gems = Instance.new("IntValue")
+		gems.Name = "Gems"
+		gems.Value = 0
+		gems.Parent = leaderstats
 
-        -- Load data
-        local success, data = pcall(function()
-            return MoneyDataStore:GetAsync(key)
-        end)
+		local kills = Instance.new("IntValue")
+		kills.Name = "Kills"
+		kills.Value = 0
+		kills.Parent = leaderstats
+
+		local rebirth = Instance.new("IntValue")
+		rebirth.Name = "Rebirths"
+		rebirth.Value = 0
+		rebirth.Parent = leaderstats
+
+		local key = "Player_" .. player.UserId
+
+		-- Load data
+		local success, data = pcall(function()
+			return MoneyDataStore:GetAsync(key)
+		end)
 
 		local firstJoinTime = os.time()
 		local specialOfferBought = false
 
-        if success then
-            if type(data) == "table" then
+		if success then
+			if type(data) == "table" then
 				money.Value = data.Money or 0
 				gems.Value = data.Gems or 0
 				kills.Value = data.Kills or 0
@@ -88,19 +90,19 @@ Players.PlayerAdded:Connect(function(player)
 				specialOfferBought = data.SpecialOfferBought == true
 			elseif type(data) == "number" then
 				money.Value = data
-				end
+			end
 			player:SetAttribute("DataLoaded", true)
-        else
-            warn("Failed to load data for " .. player.Name .. ": " .. tostring(data))
-        end
+		else
+			warn("Failed to load data for " .. player.Name .. ": " .. tostring(data))
+		end
 		player:SetAttribute("SpecialOfferFirstJoin", firstJoinTime)
 		player:SetAttribute("SpecialOfferExpiresAt", firstJoinTime + StoreConfig.SPECIAL_OFFER.duration)
 		player:SetAttribute("SpecialOfferBought", specialOfferBought)
 	end)
 
 	-- Run when player leaves
-		Players.PlayerRemoving:Connect(function(player)
-			savePlayerData(player)
+	Players.PlayerRemoving:Connect(function(player)
+		savePlayerData(player)
 	end)
 
 	game:BindToClose(function()

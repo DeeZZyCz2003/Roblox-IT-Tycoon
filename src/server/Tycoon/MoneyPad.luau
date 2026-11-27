@@ -9,9 +9,10 @@ function moneyPad.setupMoneyPad(pad, playerOwner)
 	pad.Color = Color3.fromRGB(0, 150, 0) -- Green means ready
 
 	pad.Touched:Connect(function(hit)
-
 		local player = game.Players:GetPlayerFromCharacter(hit.Parent)
-		if player ~= playerOwner then return end
+		if player ~= playerOwner then
+			return
+		end
 
 		-- If unlocked, proceed with collection and lock it immediately.
 		if debounce == false then
@@ -30,7 +31,6 @@ function moneyPad.setupMoneyPad(pad, playerOwner)
 		end
 	end)
 end
-
 
 --TESTING NA BAKALARKU
 --[[
@@ -60,6 +60,5 @@ function moneyPad.setupMoneyPad(pad)
 	end)
 end
 --]]
-
 
 return moneyPad

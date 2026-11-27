@@ -68,7 +68,6 @@ function GamePassConfig.Start()
 	end)
 end
 
-
 --TESTING NA BAKALARKU
 --[[
 local function applyWalkSpeedDebug(player: Player, character: Model)
@@ -110,6 +109,5 @@ function GamePassConfig.Start()
 	end)
 end
 --]]
-
 
 return GamePassConfig

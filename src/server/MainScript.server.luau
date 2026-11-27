@@ -37,5 +37,3 @@ print(" -> ButtonsFolder:", buttonsFolder ~= nil, "| Počet tlačítek:", #butto
 print("[MainScript] Všechny moduly úspěšně načteny a spuštěny.")
 print("=========================================")
 --]]
-
-
